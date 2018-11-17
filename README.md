@@ -6,7 +6,7 @@
 
 ### App Walk-though
 
-<img src="hhttps://imgur.com/a/yfI8wPn" width=200><br>
+<img src="https://imgur.com/a/yfI8wPn" width=200><br>
 ## Required
 - [x] User can click on a ‘+’ button that takes the user to new ‘Add Card Screen’
 - [x] The 'Add Card Screen' has a cancel button to take the user back to the main screen

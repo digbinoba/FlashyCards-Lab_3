@@ -1,10 +1,15 @@
 package com.example.delano.flashycards;
 
+import android.animation.Animator;
 import android.content.Intent;
+import android.os.CountDownTimer;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -18,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
     List<Flashcard> allFlashCards;
     int currentCardDisplayedIndex = 0;
+    CountDownTimer countDownTimer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +40,14 @@ public class MainActivity extends AppCompatActivity {
             ((TextView) findViewById(R.id.flashcard_answer)).setText(allFlashCards.get(0).getAnswer());
         }
 
-
+        //Next card button
         findViewById(R.id.next_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                final Animation leftOutAnim = AnimationUtils.loadAnimation(v.getContext(), R.anim.left_out);
+                final Animation rightInAnim = AnimationUtils.loadAnimation(v.getContext(), R.anim.right_in);
+
                 // advance our pointer index so we can show the next card
                 currentCardDisplayedIndex++;
 
@@ -45,19 +56,64 @@ public class MainActivity extends AppCompatActivity {
                     currentCardDisplayedIndex = 0;
                 }
 
+
+                leftOutAnim.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                        // this method is called when the animation first starts
+                        findViewById(R.id.flashcard_question).startAnimation(leftOutAnim);
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        // this method is called when the animation is finished playing
+                        findViewById(R.id.flashcard_question).startAnimation(rightInAnim);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+                        // we don't need to worry about this method
+                    }
+                });
+
                 // set the question and answer TextViews with data from the database
                 ((TextView) findViewById(R.id.flashcard_question)).setText(allFlashCards.get(currentCardDisplayedIndex).getQuestion());
                 ((TextView) findViewById(R.id.flashcard_answer)).setText(allFlashCards.get(currentCardDisplayedIndex).getAnswer());
+
+
+
             }
+
+
         });
 
+        //This activitates when the flashcard question is clicked
 
         findViewById(R.id.flashcard_question).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Set the questions to the answer
-                findViewById(R.id.flashcard_answer).setVisibility(View.VISIBLE);
-                findViewById(R.id.flashcard_question).setVisibility(View.INVISIBLE);
+                //findViewById(R.id.flashcard_answer).setVisibility(View.VISIBLE);
+                //findViewById(R.id.flashcard_question).setVisibility(View.INVISIBLE);
+
+                View answerSideView = findViewById(R.id.flashcard_answer);
+                View questionSideView = findViewById(R.id.flashcard_question);
+                // get the center for the clipping circle
+                int cx = answerSideView.getWidth() / 2;
+                int cy = answerSideView.getHeight() / 2;
+
+                // get the final radius for the clipping circle
+                float finalRadius = (float) Math.hypot(cx, cy);
+
+                // create the animator for this view (the start radius is zero)
+                Animator anim = ViewAnimationUtils.createCircularReveal(answerSideView, cx, cy, 0f, finalRadius);
+
+                // hide the question and show the answer to prepare for playing the animation!
+                questionSideView.setVisibility(View.INVISIBLE);
+                answerSideView.setVisibility(View.VISIBLE);
+
+                anim.setDuration(1000);
+                anim.start();
             }
         });
 
@@ -78,6 +134,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, add_card.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.right_in, R.anim.left_out);
                 MainActivity.this.startActivityForResult(intent, 100);
             }
         });

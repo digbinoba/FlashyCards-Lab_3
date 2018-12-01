@@ -5,9 +5,8 @@
 Simple app to make your own flashcards
 ### App Walk-though
 
-<img src="https://i.imgur.com/gpZgsS1.gifv" width=200><br>
+<img src="https://i.imgur.com/gpZgsS1.gif" width=200><br>
 
-In the User stories section below, add an `x` between the `-[ ]` like this `- [x]` for any user story you complete. (☝️ Remove this paragraph after after checking off user stories)
 
 ## Required
 - [x] User sees a transition animation when going from the main screen to the add card screen.
